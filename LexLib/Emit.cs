@@ -836,7 +836,7 @@ namespace LexLib
                     AcceptMethod m = accept_dispatch[yy_last_accept_state];
                     if (m != null)
                     {{
-                        Yytoken tmp = m(); // spec.type_name
+                        var tmp = m(); // spec.type_name
                         if (tmp != null)
                             return tmp;
                     }}
