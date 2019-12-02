@@ -14,18 +14,20 @@ namespace CsLexConsole
         {
             Gen lg;
 
-            if (args.Length < 2)
+            if (args.Length < 1)
             {
                 Console.WriteLine("lex <filename>");
                 return;
             }
 
-            var filename = args[1];
+            var filename = args[0];
             if (!File.Exists(filename))
             {
                 Console.WriteLine("Error: Unable to open input file " + filename + ".");
                 return;
             }
+
+            Console.WriteLine("Able to open input file " + filename + ".");
 
             var instream = new StreamReader(
                             new FileStream(filename, FileMode.Open,
