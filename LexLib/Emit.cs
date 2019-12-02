@@ -263,7 +263,7 @@ namespace LexLib
 
             // User specified constructor init code
             var userinit = User_Init();
-            outstream.Write(userinit); 
+            outstream.Write(userinit);
 
             var actions = Action_Methods_Body();
             outstream.Write(actions);
@@ -300,7 +300,7 @@ namespace LexLib
 
         /*
          * Function: Helpers
-         * Description: Emits helper functions, particularly 
+         * Description: Emits helper functions, particularly
          * error handling and input buffering.
          */
         private void Helpers()
@@ -643,7 +643,7 @@ namespace LexLib
             int size = spec.dtrans_list.Count;
             int lastelem = size - 1;
             int lastcol = spec.dtrans_ncols - 1;
-            
+
             StringBuilder sb = new StringBuilder();
             sb.Append(@"
     static int[,] yy_nxt = new int[,]
@@ -722,7 +722,7 @@ namespace LexLib
 
         /*
          * Function: Driver
-         * Description: 
+         * Description:
          */
         void Driver()
         {
@@ -856,6 +856,7 @@ namespace LexLib
             }}
         }}
     }}
+    }}
     #endregion
 ", getDriverType(), spec.function_name, EOF_Test(), spec.accept_list.Count);
 
@@ -874,7 +875,7 @@ namespace LexLib
 
         /*
          * Function: Actions
-         * Description:     
+         * Description:
          */
         private string Actions()
         {
@@ -1007,7 +1008,7 @@ namespace LexLib
 
         /*
          * Function: Footer
-         * Description:     
+         * Description:
          */
         private void Footer()
         {
