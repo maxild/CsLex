@@ -15,16 +15,16 @@ namespace LexLib
 
         private Input ibuf;     /* Input buffer class. */
 
-        private Dictionary<char, int> tokens;   /* Hashtable that maps characters to their 
+        private Dictionary<char, int> tokens;   /* Hashtable that maps characters to their
 				 corresponding lexical code for
 				 the internal lexical analyzer. */
         private Spec spec;      /* Spec class holds information
 				 about the generated lexer. */
-        private bool init_flag;     /* Flag set to true only upon 
+        private bool init_flag;     /* Flag set to true only upon
 				 successful initialization. */
 
         private MakeNfa makeNfa;    /* NFA machine generator module. */
-        private Nfa2Dfa nfa2dfa;    /* NFA to DFA machine (transition table) 
+        private Nfa2Dfa nfa2dfa;    /* NFA to DFA machine (transition table)
 				 conversion module. */
         private Minimize minimize;  /* Transition table compressor. */
                                     //private SimplifyNfa simplifyNfa; /* NFA simplifier using char classes */
@@ -66,7 +66,7 @@ namespace LexLib
         }
 
         void init()
-        { 
+        {
             /* Create input buffer class. */
             ibuf = new Input(instream);
 
@@ -104,7 +104,7 @@ namespace LexLib
 
         /*
          * Function: generate
-         * Description: 
+         * Description:
          */
         public void generate()
         {
@@ -317,6 +317,8 @@ namespace LexLib
         private String implements_dir = "%implements";
         private String function_dir = "%function";
         private String type_dir = "%type";
+        private String epsilon_dir = "%epsilon";
+        private String eof_dir = "%eof";
         private String integer_dir = "%integer";
         private String intwrap_dir = "%intwrap";
         private String full_dir = "%full";
@@ -326,8 +328,8 @@ namespace LexLib
         private String init_code_end_dir = "%init}";
         private String eof_code_dir = "%eof{";
         private String eof_code_end_dir = "%eof}";
-        private String eof_value_code_dir = "%eofval{";
-        private String eof_value_code_end_dir = "%eofval}";
+        //private String eof_value_code_dir = "%eofval{";
+        //private String eof_value_code_end_dir = "%eofval}";
         private String class_code_dir = "%{";
         private String class_code_end_dir = "%}";
         private String yyeof_dir = "%yyeof";
@@ -431,12 +433,24 @@ namespace LexLib
                                              EOF_CODE);
                                 break;
                             }
-                            if (Utility.Compare(ibuf.line, eof_value_code_dir) == 0)
+                            //if (Utility.Compare(ibuf.line, eof_value_code_dir) == 0)
+                            //{
+                            //    spec.eof_value_code = packCode(eof_value_code_dir,
+                            //                   eof_value_code_end_dir,
+                            //                   spec.eof_value_code,
+                            //                   EOF_VALUE_CODE);
+                            //    break;
+                            //}
+                            if (Utility.Compare(ibuf.line, eof_dir) == 0)
                             {
-                                spec.eof_value_code = packCode(eof_value_code_dir,
-                                               eof_value_code_end_dir,
-                                               spec.eof_value_code,
-                                               EOF_VALUE_CODE);
+                                ibuf.line_index = eof_dir.Length;
+                                spec.eof_token = getName();
+                                break;
+                            }
+                            if (Utility.Compare(ibuf.line, epsilon_dir) == 0)
+                            {
+                                ibuf.line_index = epsilon_dir.Length;
+                                spec.epsilon_token = getName();
                                 break;
                             }
                             /* Bad directive. */
@@ -593,7 +607,7 @@ namespace LexLib
                     saveMacro();
                 }
 #if OLD_DEBUG
-    Console.WriteLine("Line number " + ibuf.line_number + ":"); 
+    Console.WriteLine("Line number " + ibuf.line_number + ":");
     Console.Write(new String(ibuf.line, 0,ibuf.line_read));
 #endif
             }
@@ -601,7 +615,7 @@ namespace LexLib
 
         /*
          * Function: userRules
-         * Description: Processes third section of Lex 
+         * Description: Processes third section of Lex
          * specification and creates minimized transition table.
          */
         private void userRules()
@@ -819,7 +833,7 @@ namespace LexLib
          * Description: Parses the state area of a rule,
          * from the beginning of a line.
          * < state1, state2 ... > regular_expression { action }
-         * Returns null on only EOF.  Returns all_states, 
+         * Returns null on only EOF.  Returns all_states,
          * initialied properly to correspond to all states,
          * if no states are found.
          * Special Notes: This function treats commas as optional
@@ -935,7 +949,7 @@ namespace LexLib
                     name = new String(ibuf.line, start_state, count_state);
 
                     if (!spec.states.TryGetValue(name, out index))
-                    { 
+                    {
                         /* Uninitialized state. */
                         Console.WriteLine("Uninitialized State Name: [" + name + "]");
                         Error.parse_error(Error.E_STATE, ibuf.line_number);
@@ -947,7 +961,7 @@ namespace LexLib
 
             if (null == all_states)
             {
-                all_states = new BitSet(states.Count, true);
+                all_states = states != null ? new BitSet(states.Count, true) : new BitSet();
             }
 
             if (ibuf.line_index < ibuf.line_read)
@@ -959,7 +973,7 @@ namespace LexLib
 
         /*
          * Function: expandMacro
-         * Description: Returns false on error, true otherwise. 
+         * Description: Returns false on error, true otherwise.
          */
         private bool expandMacro()
         {
@@ -1253,7 +1267,7 @@ namespace LexLib
          * for them in state hashtable in CSpec structure.
          * State declaration should be of the form:
          * %state name0[, name1, name2 ...]
-         * (But commas are actually optional as long as there is 
+         * (But commas are actually optional as long as there is
          * white space in between them.)
          */
         private void saveStates()
@@ -1319,10 +1333,10 @@ namespace LexLib
                 count_state = ibuf.line_index - start_state;
 
 #if OLD_DEBUG
-    Console.WriteLine("State name \"" 
+    Console.WriteLine("State name \""
 		      + new String(ibuf.line,start_state,count_state)
 			  + "\".");
-    Console.WriteLine("Integer index \"" 
+    Console.WriteLine("Integer index \""
 		      + spec.states.Count
 		      + "\".");
 #endif
@@ -1450,7 +1464,7 @@ namespace LexLib
 
         /*
          * Function: packAccept
-         * Description: Packages and returns CAccept 
+         * Description: Packages and returns CAccept
          * for action next in input stream.
          */
         public Accept packAccept()
@@ -1691,7 +1705,7 @@ namespace LexLib
                 Utility.assert(ibuf.line_index <= ibuf.line_read);
             }
 
-            /* Look for backslash, and corresponding 
+            /* Look for backslash, and corresponding
                escape sequence. */
             if ('\\' == ibuf.line[ibuf.line_index])
             {
@@ -1706,7 +1720,7 @@ namespace LexLib
             {
                 if (!spec.in_ccl && Utility.IsSpace(ibuf.line[ibuf.line_index]))
                 {
-                    /* White space means the end of 
+                    /* White space means the end of
                    the current regular expression. */
 
                     spec.current_token = EOS;

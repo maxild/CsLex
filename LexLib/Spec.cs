@@ -10,7 +10,7 @@ namespace LexLib
          */
 
         /* Lexical States. */
-        public Dictionary<string, int> states; /* Hashtable taking state indices (Integer) 
+        public Dictionary<string, int> states; /* Hashtable taking state indices (Integer)
 			    to state name (String). */
 
         /* Regular Expression Macros. */
@@ -25,7 +25,7 @@ namespace LexLib
 
         public List<Nfa>[] state_rules; /* An array of Lists of Nfa.
 				   The ith Vector represents the lexical state
-				   with index i.  The contents of the ith 
+				   with index i.  The contents of the ith
 				   List are the indices of the NFA start
 				   states that can be matched while in
 				   the ith lexical state. */
@@ -37,7 +37,7 @@ namespace LexLib
         public List<Dfa> dfa_states;    /* List of states, with index
 				   corresponding to label. */
         public Dictionary<BitSet, Dfa> dfa_sets;    /* Hashtable taking set of NFA states
-				   to corresponding DFA state, 
+				   to corresponding DFA state,
 				   if the latter exists. */
 
         /* Accept States and Corresponding Anchors. */
@@ -80,7 +80,10 @@ namespace LexLib
         public String init_code;
         public String class_code;
         public String eof_code;
-        public String eof_value_code;
+        //public String eof_value_code;
+
+        public String eof_token;
+        public String epsilon_token = "default"; // null
 
         /* Class, function, type names. */
         public string class_name = "Yylex";
@@ -144,7 +147,7 @@ namespace LexLib
             init_code = null;
             class_code = null;
             eof_code = null;
-            eof_value_code = null;
+            //eof_value_code = null;
 
             state_dtrans = null;
 
@@ -179,7 +182,7 @@ namespace LexLib
       Console.Write("*");
 
       Console.WriteLine("---------------");
-      Console.Write("working on DFA state " 
+      Console.Write("working on DFA state "
 		    + unmarked_dfa
 		    + " = NFA states: ");
       Nfa2Dfa.Print_Set(dfa.GetNFASet());

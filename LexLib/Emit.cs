@@ -255,7 +255,7 @@ namespace LexLib
 
     #endregion
 ",
-                spec_access, spec.class_name);
+                spec_access, AsCtorName(spec.class_name));
 
             // action init
             var actioninit = Action_Methods_Init();
@@ -713,10 +713,12 @@ namespace LexLib
 
             if (spec.integer_type)
                 sb.AppendLine("        return YYEOF;");
-            else if (spec.eof_value_code != null)
-                sb.Append(spec.eof_value_code);
+            else if (spec.eof_token != null)
+                sb.AppendLine($"        return {spec.eof_token};");
+            //else if (spec.eof_value_code != null)
+            //    sb.Append(spec.eof_value_code);
             else
-                sb.AppendLine("        return null;");
+                sb.AppendLine("        return default;");
             return sb.ToString();
         }
 
@@ -837,7 +839,7 @@ namespace LexLib
                     if (m != null)
                     {{
                         var tmp = m(); // spec.type_name
-                        if (tmp != null)
+                        if (tmp != {4})
                             return tmp;
                     }}
                 }}
@@ -858,7 +860,7 @@ namespace LexLib
     }}
     }}
     #endregion
-", getDriverType(), spec.function_name, EOF_Test(), spec.accept_list.Count);
+", getDriverType(), spec.function_name, EOF_Test(), spec.accept_list.Count, spec.epsilon_token);
 
             outstream.Write(sb);
         }
@@ -1020,6 +1022,13 @@ namespace LexLib
     }
 }
 ");
+        }
+
+        static string AsCtorName(string class_name)
+        {
+            int pos = class_name.IndexOf('<');
+            if (pos < 0) return class_name;
+            return class_name.Substring(0, class_name.Length - pos);
         }
     }
 }
